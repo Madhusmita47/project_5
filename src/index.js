@@ -1,15 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const route = require('./src/route/route');
+const route = require('./routes/routes');
 const mongoose = require('mongoose');
 const app = express();
+const multer=require("multer")
 
 
 mongoose.set('strictQuery', true)
 
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer().any())
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 
 
 mongoose.connect("mongodb+srv://viHAan:vihaan@project5-of-room-27.fxww7ye.mongodb.net/group27Database", {
