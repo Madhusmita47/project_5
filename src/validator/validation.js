@@ -21,9 +21,9 @@ const isValidEmail = function (value) {
 
 //============================// idCharacterValid //============================
 
-// const isIdValid = function (value) {
-//   return mongoose.Types.ObjectId.isValid(value); 
-// };
+const isIdValid = function (value) {
+  return mongoose.Types.ObjectId.isValid(value); 
+};
 
 
 //==============================// isValidName //===============================

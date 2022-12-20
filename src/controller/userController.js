@@ -109,7 +109,7 @@ const createUser = async function (req, res) {
         }
       }
     }
-    const saltRounds = 18
+    const saltRounds =10
     const hash = await bcrypt.hash(password, saltRounds);
     data.password = hash;
 
@@ -207,40 +207,102 @@ const getUserById = async function (req, res) {
     return res.status(500).send({ status: false, message: err.message })
   }
 };
-const updateUserProfile = async function (req, res){
-  try{
-      const userId = req.params.userId
-      if (validator.ObjectId(userId) == false) {
-          return res.status(400).send({ status: false, message: "User Id is not valid" });
-      }
-      const existUser = await userModel.findOne({ _id: userId })
-      if (!existUser) {
-          return res.status(404).send({ status: false, message: "No User found with given Id" });
-      }
-      let requestedBody = req.body
-      const { fname, lname, email, profileImage, phone, password, address } = requestedBody
-      if (validator.isValid(fname) == false) { return res.status(400).send({ status: false, message: "First Name should be valid" }) }
-      if (validator.isValid(lname) == false) { return res.status(400).send({ status: false, message: "Last Name should be valid" }) }
-      if (validator.isValid(email) == false) { return res.status(400).send({ status: false, message: "Email should be valid" }) }
-      const uniqueEmail = await userModel.findOne({ email: email })
-      if (uniqueEmail) {
-          return res.status(400).send({ status: false, message: "Email already Taken" })
-      }
-      if (validator.isValid(phone) == false) { return res.status(400).send({ status: false, message: "Phone No should be valid" }) }
-      const uniquePhone = await userModel.findOne({ phone: phone })
-      if (uniquePhone) {
-          return res.status(400).send({ status: false, message: "Phone No. already Exist" })
-      }
-      if (password) {
-          if (password.length < 8 || password.length > 15)
-              return res.status(400).send({ status: false, message: "Password length must be between 8-15" })
-      }
-      if (validator.isValid(address) == false) { return res.status(400).send({ status: false, message: "Address should be valid" }) }
-      const updatedProfile = await userModel.findByIdAndUpdate({ _id: userId },{ $set: requestedBody }, { new: true })
-      return res.status(201).send({status: true, message : "Your Profile is Updated Successfully",data: updatedProfile})
-  }catch(err){
-      return res.status(500).send({ msg: "Error", error: err.message })
-  }
+const updateUserProfile = async function (req, res) {
+  try {
+     const { userId } = req.params
+     let data = req.body
+     let files=req.files
+    
+        
+     if (!valid(data)) return res.status(400).send({ status: false, message: "please provide data inside request body" })
+
+     let updateData = {}
+     let { fname, lname, email, phone, password, address, profileImage} = data
+     
+     for(let key in req.body){
+        if(req.body[key].trim().length==0){
+            return res.status(400).send({status:false, message:`${key} can't be empty`})
+        }
+     }
+     if (fname) {
+        if (!isValidName(fname)) {
+           return res.status(400).send({ status: false, message: "fname should be in character" });
+        }
+        updateData['fname'] = fname
+     }
+     if (lname) {
+        if (!isValidName(lname)) return res.status(400).send({ status: false, message: "lname should be in character" })
+        updateData['lname'] = lname
+     }
+
+     if (email) {
+        if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Provide Email in Proper format" })
+        const ExistEmail = await userModel.findOne({ email: email })
+        if (ExistEmail) return res.status(400).send({ status: false, message: 'give another email to update' })
+        updateData['email'] = email
+     }
+     if (phone) {
+        if (!isValidPhone(phone)) return res.status(400).send({ status: false, message: "Provide Phone number in Proper format" })
+        const ExistPhone = await userModel.findOne({ phone: phone })
+        if (ExistPhone)return  res.status(400).send({ status: false, message: 'give another phone to update' })
+        updateData['phone'] = phone
+     }
+
+     if (password) {
+        if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Enter password in valid format " })
+        const saltRounds = 10
+        const hash = await bcrypt.hash(password, saltRounds);
+        updateData['password'] = hash
+     }
+     if (address) {
+      address = JSON.parse(address)
+        if (Object.keys(address).length == 0) return res.status(400).send({ status: false, message: "Please Enter the address in object form" })
+        if (address.shipping) {
+           let { street, city, pincode } = address.shipping
+           if (street) {
+              if (!isValidString(street)) return res.status(400).send({ status: false, message: "Please Enter valid Street" })
+              address['shipping.street'] = street
+           }
+           if (city) {
+              if (!isValidString(city)) return res.status(400).send({ status: flase, message: "Please Enter valid city" })
+              address['shipping.city'] = city
+           }
+           if (pincode) {
+              if (!isvalidPincode(pincode)) return res.status(400).send({ status: false, message: "Please Enter Six digit Pincode" })
+              address['shipping.pincode'] = pincode
+           }
+        }
+
+        if (address.billing) {
+           let { street, city, pincode } = address.billing
+           if (street) {
+              if (!isValidString(street)) return res.status(400).send({ status: false, message: "Please Enter valid Street" })
+              address['billing.street'] = street
+           }
+           if (city) {
+              if (!isValidString(city)) return res.status(400).send({ status: false, message: "Please Enter valid city" })
+              address['billing.city'] = city
+           }
+           if (pincode) {
+              if (!isvalidPincode(pincode)) return res.status(400).send({ status: false, message: "Please Enter Six digit Pincode" })
+              address['billing.pincode'] = pincode
+           }
+        }
+        updateData["address"] = address
+     }
+
+    if(profileImage){
+      if(files && files.length>0){
+        let uploadedFileURL = await uploadFile(files[0]);
+        updateData['profileImage']= uploadedFileURL
+      }}
+     const updateduserprofile = await userModel.findOneAndUpdate({ _id:userId }, {$set:updateData}, { new: true })
+     return res.status(200).send({ status: true, message: "Success", data: updateduserprofile })
+
+  }
+  catch (err) {
+     return res.status(500).send({ status: false, message: err.message })
+  }
 }
 
 module.exports = { userLogin, createUser, getUserById, updateUserProfile };
