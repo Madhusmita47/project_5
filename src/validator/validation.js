@@ -1,4 +1,5 @@
 
+const mongoose=require("mongoose");
 const valid=function(value){
     if(typeof value=="number" || typeof value==null || typeof value==undefined)
     return false
@@ -47,6 +48,20 @@ const isValidPassword = function(password){
   let re= /^(?=.*[0-9])(?=.*[!.@#$%^&*])[a-zA-Z0-9!.@#$%^&*]{8,15}$/
   return re.test(password)
 }
+//==============================//isValidImage //=====================
+const isValidImg = (img) => {
+  return (/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i).test(img)
+}
+//============================//isvalidstyle //=======================
+const isValidStyle = function (value) {
+  return (/^[a-zA-Z _.-]+$/).test(value)        
+}
+//===========================//isValidSize//============================
+const isValidSize = function(size){
+  if(typeof(size)==='string' && size!="S" && size!="XS" && size!="M" && size!="X" && size!="L" && size!="XXL" && size!="XL")return false;
+  // if(typeof(size)==='ob' && size!="S" && size!="XS" && size!="M" && size!="X" && size!="L" && size!="XXL" && size!="XL")return false;
+  return true
+}
 
 
 //==============================// isValid-date //==============================
@@ -62,12 +77,13 @@ const isvalidPincode = function (pincode) {
   return re.test(pincode)
   
 }
+//==========================//isValidStreet//====================================
 const isValidStreet = function (street) {
   let streets = /^[#.0-9a-zA-Z\s,-]+$/;
   return streets.test(street);
 };
 //=============================// module exports //==============================
 
-module.exports = { isValidStreet,valid,regForUrl,isValidEmail, isValidName, isValidPhone, isValidPassword, isvalidPincode }
+module.exports = { isValidStreet,valid,regForUrl,isValidEmail, isIdValid, isValidName, isValidPhone, isValidPassword,isValidImg,isValidStyle,isValidSize, isvalidPincode }
 
 

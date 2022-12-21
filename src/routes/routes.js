@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const {createUser, userLogin, getUserById, updateUserProfile}= require("../controller/UserController")
-const{createProduct,getProductsById,getProductsByFilter}=require("../controller/productController")
+const{createProduct,getProductsById,getProductsByFilter,updateProduct,deleteProduct}=require("../controller/productController")
 const {Authentication,Authorisation}=require("../middleware/auth")
 
 router.get('/test', async function(req,res){
@@ -17,6 +17,8 @@ router.get('/test', async function(req,res){
 router.post("/products",createProduct)
 router.get("/products/:productId",getProductsById)
 router.get("/products", getProductsByFilter)
+ router.put("/products/:productId",updateProduct)
+router.delete("/products/:productId",deleteProduct)
 //------------------cartapi-------------------------------------
 //------------------orderapi------------------------------------
 

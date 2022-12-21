@@ -20,6 +20,14 @@ const createUser = async function (req, res) {
     }
 
     let { fname, lname, email, phone, password, address, profileImage } = data;
+    //------------------------------checking presence of keys-------------------------
+    if(!fname) {return res.status(400).send({ status: "false", message: "fname is mandatory" })};
+    if(!lname) {return res.status(400).send({ status: "false", message: "lname is mandatory" })};
+    if(!email) {return res.status(400).send({ status: "false", message: "email is mandatory " })};
+    if(!phone) {return res.status(400).send({ status: "false", message: "phone is mandatory" })};
+    if(!password) {return res.status(400).send({ status: "false", message: "password is mandatory" })};
+    if(!address) {return res.status(400).send({ status: "false", message: "address is mandatory" })};
+   //-------------------------------check validation--------------------------------
     if (!valid(fname)) {
       return res.status(400).send({ status: "false", message: "fname must be present" });
     }
@@ -57,13 +65,6 @@ const createUser = async function (req, res) {
     if (!valid(address)) {
       return res.status(400).send({ status: "false", message: "Address must be present" });
     }
-
-
-
-
-
-
-
 
     // ------- Address Validation  --------
     if (address) {
@@ -123,13 +124,10 @@ const createUser = async function (req, res) {
     }
     if (files && files.length > 0) {
       let uploadedFileURL = await uploadFile(files[0]);
-      data.profileImage = uploadedFileURL
+      data.profileImage = uploadedFileURL;
     } else {
-      res.status(400).send({ msg: "ProfileImage is Mandatory" });
+      return res.status(400).send({status:false, msg: "ProfileImage is Mandatory" });
     }
-
-
-
 
     let savedUser = await userModel.create(data);
     return res.status(201).send({
@@ -196,7 +194,7 @@ const getUserById = async function (req, res) {
     if (mongoose.Types.ObjectId.isValid(userId) == false) {
       return res.status(400).send({ status: false, message: "Invalid userId" });
     }
-    let userDetails = await userModel.findOne({ _id: userId }).lean();
+    let userDetails = await userModel.findOne({ _id: userId });
     if (!userDetails) {
       return res.status(404).send({ status: false, msg: "No such user exists" });
     }
@@ -291,11 +289,11 @@ const updateUserProfile = async function (req, res) {
         updateData["address"] = address
      }
 
-    if(profileImage){
+      
       if(files && files.length>0){
         let uploadedFileURL = await uploadFile(files[0]);
         updateData['profileImage']= uploadedFileURL
-      }}
+      }
      const updateduserprofile = await userModel.findOneAndUpdate({ _id:userId }, {$set:updateData}, { new: true })
      return res.status(200).send({ status: true, message: "Success", data: updateduserprofile })
 
