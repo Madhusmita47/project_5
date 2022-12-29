@@ -22,13 +22,13 @@ router.get("/products", getProductsByFilter)
  router.put("/products/:productId",updateProduct)
 router.delete("/products/:productId",deleteProduct)
 //------------------cartapi-------------------------------------
-router.post("/users/:userId/cart",createCart)
-router.get("/users/:userId/cart",getCartById)
-router.put("/users/:userId/cart",updateCart)
-router.delete("/users/:userId/cart",deleteCart)
+router.post("/users/:userId/cart",Authentication,Authorisation,createCart)
+router.get("/users/:userId/cart",Authentication,Authorisation,getCartById)
+router.put("/users/:userId/cart",Authentication,Authorisation,updateCart)
+router.delete("/users/:userId/cart",Authentication,Authorisation,deleteCart)
 //------------------orderapi------------------------------------
-router.post("/users/:userId/orders",createOrder)
-router.put("/users/:userId/orders",cancelOrder)
+router.post("/users/:userId/orders",Authentication,Authorisation,createOrder)
+router.put("/users/:userId/orders",Authentication,Authorisation,cancelOrder)
 
 
 module.exports = router
