@@ -5,7 +5,7 @@ const mongoose = require("mongoose")
 const bcrypt = require("bcrypt");
 const urlValid = require("is-valid-http-url");
 const { uploadFile } = require("./aws");
-const { valid, isValidName, isIdValid,isValidImg,isValidStyle,isValidSize } = require("../validator/validation");
+const { valid, isValidName, isIdValid,isValidImg,isValidSize,isValidStyle } = require("../validator/validation");
 
 
 const createProduct = async function (req, res) {
@@ -60,8 +60,8 @@ const createProduct = async function (req, res) {
         console.log(price)
         if(price){
             price = parseInt(price)
-            console.log(price)
-            console.log(typeof price)
+            // console.log(price)
+            // console.log(typeof price)
             if(typeof price != 'number')
             return res.status(400).send({status:false, message:"Invalid Price"})
         }
@@ -170,9 +170,10 @@ const getProductsByFilter=async function(req,res){
             let files = req.files
             // console.log(files)
             if (!(valid(updateData) || files)) return res.status(400).send({ status: false, msg: "please input some data to update" })
-            console.log(files[0])
-            if(files.length>0){
-            if (!isValidImg(files[0].originalname)) { return res.status(400).send({ status: false, message: "Image Should be of JPEG/ JPG/ PNG" }); }
+            console.log(typeof files.length)
+            if(files.length>=1){
+                if (!isValidImg(files[0].originalname)) { return res.status(400).send({ status: false, message: "Image Should be of JPEG/ JPG/ PNG" });
+             }
             }
             let findProductData = await productModel.findById({ _id: productId })
             if (!findProductData) return res.status(404).send({ status: false, msg: `no data found by this ${productId} productId` })
@@ -210,9 +211,11 @@ const getProductsByFilter=async function(req,res){
                     return res.status(400).send({ status: false, message: "Please enter a boolean value for isFreeShipping" })
             }
              
-            
+        if(files.length> 0){
+
              let uploadedFileURL = await uploadFile(files[0]);
               updateData.productImage= uploadedFileURL
+        }
            
     
             if (style) {

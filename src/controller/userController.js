@@ -57,16 +57,13 @@ const createUser = async function (req, res) {
       return res.status(400).send({ status: "false", message: "password must be present" });
     }
     if (!isValidPassword(password)) {
-      return res.status(400).send({ status: "false", message: "password must be present" });
-    }
-    if (password.length < 8 || password.length > 15) {
-      return res.status(400).send({ status: false, message: "Length of password is not correct" })
+      return res.status(400).send({ status: "false", message: "password is invalid" });
     }
     if (!valid(address)) {
       return res.status(400).send({ status: "false", message: "Address must be present" });
     }
 
-    // ------- Address Validation  --------
+    // ------- Address Validation  -------------------------------
     if (address) {
       data.address = JSON.parse(data.address);
       if (address.shipping) {
@@ -145,25 +142,17 @@ const userLogin = async function (req, res) {
     let { email, password } = data;
 
     if (Object.keys(data).length == 0)
-      return res
-        .status(400)
-        .send({ status: false, message: "Please Enter data" });
+      return res.status(400).send({ status: false, message: "Please Enter data" });
 
     if (!email)
-      return res
-        .status(400)
-        .send({ status: false, message: "Please enter email" });
+      return res.status(400).send({ status: false, message: "Please enter email" });
 
     if (!password)
-      return res
-        .status(400)
-        .send({ status: false, message: "Please enter password" });
+      return res.status(400).send({ status: false, message: "Please enter password" });
 
     const Login = await userModel.findOne({ email });
     if (!Login) {
-      return res
-        .status(404)
-        .send({ status: false, message: "Email Id does Not exist" });
+      return res.status(404).send({ status: false, message: "Email Id does Not exist" });
 
     }
     let hash = Login.password
@@ -211,7 +200,7 @@ const updateUserProfile = async function (req, res) {
      let data = req.body
      let files=req.files
     
-        
+     if(!isIdValid(userId)){return res.status(400).send({ status: false, message: "invalid userId" })}  
      if (!valid(data)) return res.status(400).send({ status: false, message: "please provide data inside request body" })
 
      let updateData = {}
@@ -304,3 +293,14 @@ const updateUserProfile = async function (req, res) {
 }
 
 module.exports = { userLogin, createUser, getUserById, updateUserProfile };
+
+let data=req.body
+const{age,name,RollNo}=data
+let finddata=await abc.find({age:age,name:name,RollNo})
+let datapresent=await abc.findOneAndUpdate({name:name},{$set:{className:className}},{new:true})
+let deletedata=await abc.findOneAndUpdate({name:name},{$set:{isDeleted:true}},{new:true})
+
+
+
+
+
