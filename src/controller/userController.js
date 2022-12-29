@@ -294,11 +294,6 @@ const updateUserProfile = async function (req, res) {
 
 module.exports = { userLogin, createUser, getUserById, updateUserProfile };
 
-let data=req.body
-const{age,name,RollNo}=data
-let finddata=await abc.find({age:age,name:name,RollNo})
-let datapresent=await abc.findOneAndUpdate({name:name},{$set:{className:className}},{new:true})
-let deletedata=await abc.findOneAndUpdate({name:name},{$set:{isDeleted:true}},{new:true})
 
 
 
