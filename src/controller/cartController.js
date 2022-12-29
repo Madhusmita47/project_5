@@ -133,7 +133,7 @@ const updateCart = async function (req, res) {
             cartExist.totalPrice -= productPrice
 
         } else {
-            let price = items[index].quantity * productPrice    ( 5 * 50)   700 -250
+            let price = items[index].quantity * productPrice   
             cartExist.totalPrice -= price
             items[index].quantity = 0
 
