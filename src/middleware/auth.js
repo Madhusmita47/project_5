@@ -9,7 +9,7 @@ const Authentication = function (req, res, next) {
         token = token.split(" ")[1]   
         console.log(token)
         if (!token) { return res.status(400).send({ status: false, message: "token must be present" }) }
-        let decode = jwt.verify(token, "group27")   ////_id 894789577658945898978
+        let decode = jwt.verify(token, "madhu")   ////_id 894789577658945898978
         if (!decode) { return res.status(401).send({ status: false, message: "user not authenticated" }) }
         req.decoded = decode
 
