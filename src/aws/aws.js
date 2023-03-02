@@ -13,10 +13,10 @@ let uploadFile= async ( file) =>{
     let s3= new aws.S3({apiVersion: '2006-03-01'}); 
 
     var uploadParams= {
-        ACL: "public-read",
-        Bucket: "classroom-training-bucket",  
-        Key: "abc/" + file.originalname,  
-        Body: file.buffer
+        ACL: "public-read",//acess control list.
+        Bucket: "classroom-training-bucket",  //bucket or object
+        Key: "abc/" + file.originalname, //file name 
+        Body: file.buffer//body content
     }
 
 
